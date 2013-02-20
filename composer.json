@@ -1,0 +1,17 @@
+{
+    "name": "ibrows/association-resolver-bundle",
+    "description": "Resolve relations over annotations",
+    "keywords": ["ibrows", "annotation", "association", "resolver"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/framework-bundle": ">=2.1",
+        "ibrows/annotation-reader": "1.*@dev"
+    },
+    "autoload": {
+        "psr-0": { "Ibrows\\AssociationResolver": "" }
+    },
+    "target-dir": "Ibrows/AssociationResolver",
+    "minimum-stability": "dev"
+}
