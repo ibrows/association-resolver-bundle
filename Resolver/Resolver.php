@@ -81,6 +81,8 @@ class Resolver implements ResolverInterface
             $output = new NullOutput();
         }
 
+        $output->writeln('<comment>---Start Resolve Associations---</comment>');
+
         $resultBag = $this->getResultBag();
         $associationAnnotations = $this->annotationReader->getAssociationAnnotations($className);
         $entities = $this->entityManager->getRepository($className)->findAll();
@@ -93,6 +95,8 @@ class Resolver implements ResolverInterface
         }
 
         $resultBag->setCountProcessed(count($entities));
+
+        $this->writeResultBagToOutput($output, $resultBag);
     }
 
     /**
@@ -116,5 +120,17 @@ class Resolver implements ResolverInterface
     protected function getTypeResolverClassName(AssociationMappingInfoInterface $mappingInfo)
     {
         return 'Ibrows\\AssociationResolver\\Resolver\\Type\\'. $mappingInfo->getAnnotation()->getType()."Resolver";
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param ResultBag $resultBag
+     */
+    protected function writeResultBagToOutput(OutputInterface $output, ResultBag $resultBag)
+    {
+        $output->writeln('<comment>Processed: ' . $resultBag->countProcessed() . ' Entries</comment>');
+        $output->writeln('<info>Changed: ' . $resultBag->countChanged() . ' Entries</info>');
+        $output->writeln('<info>Skipped: ' . $resultBag->countSkipped() . ' Entries</info>');
+        $output->writeln('<error>New: ' . $resultBag->countNew() . ' Entries</error>');
     }
 }
