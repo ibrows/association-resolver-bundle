@@ -2,6 +2,8 @@
 
 namespace Ibrows\AssociationResolver\Reader;
 
+use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
+
 use Ibrows\AnnotationReader\AnnotationReaderInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -19,7 +21,7 @@ interface AssociationAnnotationReaderInterface extends AnnotationReaderInterface
 
     /**
      * @param string $className
-     * @return AssociationMappingInformationInterface[]
+     * @return AssociationMappingInfoInterface[]
      */
     public function getAssociationAnnotations($className);
 }

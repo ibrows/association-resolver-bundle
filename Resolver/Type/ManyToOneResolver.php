@@ -3,27 +3,29 @@
 namespace Ibrows\AssociationResolver\Resolver\Type;
 
 use Ibrows\AssociationResolver\Result\ResultBag;
-use Ibrows\AssociationResolver\Reader\AssociationMappingInformationInterface;
-use Ibrows\AssociationResolver\Exception\MethodNotFoundException;
+use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
+
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ManyToOneResolver extends AbstractResolver
 {
     /**
      * @param ResultBag $resultBag
-     * @param AssociationMappingInformationInterface $mappingInformation
+     * @param AssociationMappingInfoInterface $mappingInfo
      * @param string $propertyName
      * @param mixed $entity
-     * @throws MethodNotFoundException
+     * @param OutputInterface $output
+     * @return void
      */
     public function resolveAssociation(
         ResultBag $resultBag,
-        AssociationMappingInformationInterface $mappingInformation,
+        AssociationMappingInfoInterface $mappingInfo,
         $propertyName,
-        $entity
-    )
-    {
-        $manyToOne = $mappingInformation->getAnnotation();
-        $metaData = $mappingInformation->getMetaData();
+        $entity,
+        OutputInterface $output
+    ){
+        $manyToOne = $mappingInfo->getAnnotation();
+        $metaData = $mappingInfo->getMetaData();
 
         $methods = array(
             'setEntity' => $manyToOne->getEntitySetterName() ?: 'set'. ucfirst($propertyName),

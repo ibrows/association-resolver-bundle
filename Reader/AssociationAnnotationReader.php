@@ -2,6 +2,9 @@
 
 namespace Ibrows\AssociationResolver\Reader;
 
+use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
+use Ibrows\AssociationResolver\Reader\AssociationMappingInfo;
+
 use Ibrows\AnnotationReader\AnnotationReader;
 
 use Doctrine\ORM\EntityManager;
@@ -25,7 +28,7 @@ class AssociationAnnotationReader extends AnnotationReader implements Associatio
 
     /**
      * @param string $className
-     * @return AssociationMappingInformationInterface[]
+     * @return AssociationMappingInfoInterface[]
      */
     public function getAssociationAnnotations($className)
     {
@@ -35,7 +38,7 @@ class AssociationAnnotationReader extends AnnotationReader implements Associatio
         $associationAnnotations = array();
 
         foreach($annotations as $fieldName => $annotation){
-            $associationAnnotations[$fieldName] = new AssociationMappingInformation(
+            $associationAnnotations[$fieldName] = new AssociationMappingInfo(
                 $annotation, $metaData->associationMappings[$fieldName]
             );
         }

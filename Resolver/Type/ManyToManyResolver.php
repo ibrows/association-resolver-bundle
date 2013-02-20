@@ -3,27 +3,30 @@
 namespace Ibrows\AssociationResolver\Resolver\Type;
 
 use Ibrows\AssociationResolver\Result\ResultBag;
-use Ibrows\AssociationResolver\Reader\AssociationMappingInformationInterface;
-use Ibrows\AssociationResolver\Exception\MethodNotFoundException;
+use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
+
+use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\Common\Collections\Collection;
 
 class ManyToManyResolver extends AbstractResolver
 {
     /**
      * @param ResultBag $resultBag
-     * @param AssociationMappingInformationInterface $mappingInformation
+     * @param AssociationMappingInfoInterface $mappingInfo
      * @param string $propertyName
      * @param mixed $entity
-     * @throws MethodNotFoundException
+     * @param OutputInterface $output
+     * @return void
      */
     public function resolveAssociation(
         ResultBag $resultBag,
-        AssociationMappingInformationInterface $mappingInformation,
+        AssociationMappingInfoInterface $mappingInfo,
         $propertyName,
-        $entity
-    )
-    {
-        $manyToMany = $mappingInformation->getAnnotation();
-        $metaData = $mappingInformation->getMetaData();
+        $entity,
+        OutputInterface $output
+    ){
+        $manyToMany = $mappingInfo->getAnnotation();
+        $metaData = $mappingInfo->getMetaData();
 
         $methods = array(
             'setEntity' => $manyToMany->getEntitySetterName() ?: 'set'. ucfirst($propertyName),
@@ -31,11 +34,7 @@ class ManyToManyResolver extends AbstractResolver
             'getValue' => $manyToMany->getValueGetterName() ?: 'get'. ucfirst($manyToMany->getValueFieldName())
         );
 
-        foreach($methods as $method){
-            if(!method_exists($entity, $method)){
-                throw new MethodNotFoundException(sprintf('Method "%s" not found in "%s"', $method, $entity));
-            }
-        }
+        $this->checkIfMethodsExists($methods, $entity);
 
         $getSearchFieldValueMethod = $methods['getValue'];
 
@@ -51,6 +50,7 @@ class ManyToManyResolver extends AbstractResolver
 
         $getCurrentTargetEntitiesMethod = $methods['getEntity'];
         $currentTargetEntities = $entity->$getCurrentTargetEntitiesMethod();
+
         if($currentTargetEntities instanceof Collection){
             $currentTargetEntities = $currentTargetEntities->toArray();
         }

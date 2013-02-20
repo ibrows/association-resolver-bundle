@@ -3,9 +3,8 @@
 namespace Ibrows\AssociationResolver\Reader;
 
 use Ibrows\AssociationResolver\Annotation\AssociationInterface;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
-interface AssociationMappingInformationInterface
+interface AssociationMappingInfoInterface
 {
     /**
      * @return AssociationInterface
@@ -13,7 +12,7 @@ interface AssociationMappingInformationInterface
     public function getAnnotation();
 
     /**
-     * @return ClassMetadata
+     * @return array
      */
     public function getMetaData();
 }

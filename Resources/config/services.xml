@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="ibrows_associationresolver.resolver" class="Ibrows\AssociationResolver\Resolver\Resolver">
+            <call method="setAnnotationReader">
+                <argument type="service" id="ibrows_associationresolver.annotation.reader" />
+            </call>
+            <call method="setEntityManager">
+                <argument type="service" id="doctrine.orm.entity_manager" />
+            </call>
+        </service>
+
+        <service id="ibrows_associationresolver.annotation.reader" class="Ibrows\AssociationResolver\Reader\AssociationAnnotationReader">
+            <call method="setAnnotationReader">
+                <argument type="service" id="annotation_reader" />
+            </call>
+            <call method="setEntityManager">
+                <argument type="service" id="doctrine.orm.entity_manager" />
+            </call>
+        </service>
+    </services>
+
+</container>

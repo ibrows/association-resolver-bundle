@@ -3,9 +3,13 @@
 namespace Ibrows\AssociationResolver\Resolver;
 
 use Ibrows\AssociationResolver\Resolver\Type\ResolverInterface as ResolverTypeInterface;
-use Ibrows\AssociationResolver\Reader\AssociationAnnotationReaderInterface;
 use Ibrows\AssociationResolver\Result\ResultBag;
-use Ibrows\AssociationResolver\Reader\AssociationMappingInformationInterface;
+
+use Ibrows\AssociationResolver\Reader\AssociationAnnotationReaderInterface;
+use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
+
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 
 use Doctrine\ORM\EntityManager;
 
@@ -69,19 +73,22 @@ class Resolver implements ResolverInterface
 
     /**
      * @param string $className
+     * @param OutputInterface $output
      */
-    public function resolveAssociations($className)
+    public function resolveAssociations($className, OutputInterface $output = null)
     {
+        if(null === $output){
+            $output = new NullOutput();
+        }
+
         $resultBag = $this->getResultBag();
-
         $associationAnnotations = $this->annotationReader->getAssociationAnnotations($className);
-
         $entities = $this->entityManager->getRepository($className)->findAll();
 
         foreach($entities as $entity){
-            foreach($associationAnnotations as $propertyName => $mappingInformation){
-                $resolver = $this->getTypeResolver($mappingInformation);
-                $resolver->resolveAssociation($resultBag, $mappingInformation, $propertyName, $entity);
+            foreach($associationAnnotations as $propertyName => $mappingInfo){
+                $resolver = $this->getTypeResolver($mappingInfo);
+                $resolver->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
             }
         }
 
@@ -89,17 +96,25 @@ class Resolver implements ResolverInterface
     }
 
     /**
-     * @param AssociationMappingInformationInterface $mappingInformation
+     * @param AssociationMappingInfoInterface $mappingInfo
      * @return ResolverTypeInterface
      */
-    protected function getTypeResolver(AssociationMappingInformationInterface $mappingInformation)
+    protected function getTypeResolver(AssociationMappingInfoInterface $mappingInfo)
     {
-        $associationResolverClassName =
-            'Ibrows\\AssociationResolver\\Resolver\\Type\\'. $mappingInformation->getAnnotation()->getType();
+        $associationResolverClassName = $this->getTypeResolverClassName($mappingInfo);
 
         $resolver = new $associationResolverClassName();
         $resolver->setEntityManager($this->entityManager);
 
         return $resolver;
+    }
+
+    /**
+     * @param AssociationMappingInfoInterface $mappingInfo
+     * @return string
+     */
+    protected function getTypeResolverClassName(AssociationMappingInfoInterface $mappingInfo)
+    {
+        return 'Ibrows\\AssociationResolver\\Resolver\\Type\\'. $mappingInfo->getAnnotation()->getType()."Resolver";
     }
 }
