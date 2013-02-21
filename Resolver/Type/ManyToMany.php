@@ -8,7 +8,7 @@ use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\Common\Collections\Collection;
 
-class ManyToManyResolver extends AbstractResolver
+class ManyToMany extends AbstractResolver
 {
     /**
      * @param ResultBag $resultBag

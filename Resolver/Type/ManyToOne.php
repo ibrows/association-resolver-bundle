@@ -7,7 +7,7 @@ use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ManyToOneResolver extends AbstractResolver
+class ManyToOne extends AbstractResolver
 {
     /**
      * @param ResultBag $resultBag

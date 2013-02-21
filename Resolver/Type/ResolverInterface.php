@@ -7,19 +7,15 @@ use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Doctrine\ORM\EntityManager;
-
 interface ResolverInterface
 {
-    public function setEntityManager(EntityManager $entityManager);
-
     /**
      * @param ResultBag $resultBag
      * @param AssociationMappingInfoInterface $mappingInfo
      * @param string $propertyName
      * @param mixed $entity
      * @param OutputInterface $output
-     * @return void
+     * @return ResolverInterface
      */
     public function resolveAssociation(
         ResultBag $resultBag,
@@ -27,5 +23,19 @@ interface ResolverInterface
         $propertyName,
         $entity,
         OutputInterface $output
+    );
+
+    /**
+     * @param ResultBag $resultBag
+     * @param AssociationMappingInfoInterface $mappingInfo
+     * @param string $propertyName
+     * @param mixed $entity
+     * @return bool
+     */
+    public function isResponsible(
+        ResultBag $resultBag,
+        AssociationMappingInfoInterface $mappingInfo,
+        $propertyName,
+        $entity
     );
 }

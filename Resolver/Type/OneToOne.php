@@ -2,7 +2,7 @@
 
 namespace Ibrows\AssociationResolver\Resolver\Type;
 
-class OneToOneResolver extends ManyToOneResolver
+class OneToOne extends ManyToOne
 {
 
 }

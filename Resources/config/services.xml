@@ -12,6 +12,12 @@
             <call method="setEntityManager">
                 <argument type="service" id="doctrine.orm.entity_manager" />
             </call>
+            <call method="setResolverChain">
+                <argument type="service" id="ibrows_associationresolver.resolverchain" />
+            </call>
+        </service>
+
+        <service id="ibrows_associationresolver.resolverchain" class="Ibrows\AssociationResolver\Resolver\ResolverChain">
         </service>
 
         <service id="ibrows_associationresolver.annotation.reader" class="Ibrows\AssociationResolver\Reader\AssociationAnnotationReader">
@@ -21,6 +27,22 @@
             <call method="setEntityManager">
                 <argument type="service" id="doctrine.orm.entity_manager" />
             </call>
+        </service>
+
+        <!-- Resolvers -->
+        <service  id="ibrows_associationresolver.resolver.manytomany" class="Ibrows\AssociationResolver\Resolver\Type\ManyToMany">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+        </service>
+
+        <service id="ibrows_associationresolver.resolver.manytoone" class="Ibrows\AssociationResolver\Resolver\Type\ManyToOne">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+        </service>
+
+        <service id="ibrows_associationresolver.resolver.onetoone" class="Ibrows\AssociationResolver\Resolver\Type\OneToOne">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
         </service>
     </services>
 

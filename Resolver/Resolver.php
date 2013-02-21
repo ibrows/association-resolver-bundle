@@ -2,7 +2,6 @@
 
 namespace Ibrows\AssociationResolver\Resolver;
 
-use Ibrows\AssociationResolver\Resolver\Type\ResolverInterface as ResolverTypeInterface;
 use Ibrows\AssociationResolver\Result\ResultBag;
 
 use Ibrows\AssociationResolver\Reader\AssociationAnnotationReaderInterface;
@@ -29,6 +28,11 @@ class Resolver implements ResolverInterface
      * @var ResultBag
      */
     protected $resultBag = null;
+
+    /**
+     * @var ResolverChain
+     */
+    protected $resolverChain;
 
     /**
      * @param AssociationAnnotationReaderInterface $annotationReader
@@ -61,6 +65,16 @@ class Resolver implements ResolverInterface
     }
 
     /**
+     * @param ResolverChainInterface $resolverChain
+     * @return ResolverInterface
+     */
+    public function setResolverChain(ResolverChainInterface $resolverChain)
+    {
+        $this->resolverChain = $resolverChain;
+        return $this;
+    }
+
+    /**
      * @return ResultBag
      */
     public function getResultBag()
@@ -74,6 +88,7 @@ class Resolver implements ResolverInterface
     /**
      * @param string $className
      * @param OutputInterface $output
+     * @return Resolver
      */
     public function resolveAssociations($className, OutputInterface $output = null)
     {
@@ -89,37 +104,14 @@ class Resolver implements ResolverInterface
 
         foreach($entities as $entity){
             foreach($associationAnnotations as $propertyName => $mappingInfo){
-                $resolver = $this->getTypeResolver($mappingInfo);
-                $resolver->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
+                $this->resolverChain->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
             }
         }
 
         $resultBag->setCountProcessed(count($entities));
-
         $this->writeResultBagToOutput($output, $resultBag);
-    }
 
-    /**
-     * @param AssociationMappingInfoInterface $mappingInfo
-     * @return ResolverTypeInterface
-     */
-    protected function getTypeResolver(AssociationMappingInfoInterface $mappingInfo)
-    {
-        $associationResolverClassName = $this->getTypeResolverClassName($mappingInfo);
-
-        $resolver = new $associationResolverClassName();
-        $resolver->setEntityManager($this->entityManager);
-
-        return $resolver;
-    }
-
-    /**
-     * @param AssociationMappingInfoInterface $mappingInfo
-     * @return string
-     */
-    protected function getTypeResolverClassName(AssociationMappingInfoInterface $mappingInfo)
-    {
-        return 'Ibrows\\AssociationResolver\\Resolver\\Type\\'. $mappingInfo->getAnnotation()->getType()."Resolver";
+        return $this;
     }
 
     /**
