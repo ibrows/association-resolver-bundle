@@ -88,9 +88,10 @@ class Resolver implements ResolverInterface
     /**
      * @param string $className
      * @param OutputInterface $output
+     * @param bool $flush
      * @return Resolver
      */
-    public function resolveAssociations($className, OutputInterface $output = null)
+    public function resolveAssociations($className, OutputInterface $output = null, $flush = false)
     {
         if(null === $output){
             $output = new NullOutput();
@@ -110,6 +111,14 @@ class Resolver implements ResolverInterface
 
         $resultBag->setCountProcessed(count($entities));
         $this->writeResultBagToOutput($output, $resultBag);
+
+        if(true === $flush){
+            $em = $this->entityManager;
+            foreach($resultBag->getChanged() as $entity){
+                $em->persist($entity);
+            }
+            $em->flush();
+        }
 
         return $this;
     }
