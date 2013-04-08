@@ -21,6 +21,11 @@ class ResultBag
      * @var array
      */
     protected $skipped = array();
+    
+    /**
+     * @var int
+     */
+    protected $processed = 0;
 
     /**
      * @var Collection
