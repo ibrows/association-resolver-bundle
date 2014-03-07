@@ -16,6 +16,16 @@ abstract class AbstractResolver implements ResolverInterface
     protected $entityManager;
 
     /**
+     * @var bool
+     */
+    protected $softdeletable = true;
+
+    /**
+     * @var string
+     */
+    protected $softdeletableGetter = 'getDeletedAt';
+
+    /**
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
@@ -47,6 +57,42 @@ abstract class AbstractResolver implements ResolverInterface
         $className = get_class($this);
         $explode = explode('\\', $className);
         return end($explode);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSoftdeletableGetter()
+    {
+        return $this->softdeletableGetter;
+    }
+
+    /**
+     * @param string $softdeletableGetter
+     * @return AbstractResolver
+     */
+    public function setSoftdeletableGetter($softdeletableGetter)
+    {
+        $this->softdeletableGetter = $softdeletableGetter;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSoftdeletable()
+    {
+        return $this->softdeletable;
+    }
+
+    /**
+     * @param boolean $softdeletable
+     * @return AbstractResolver
+     */
+    public function setSoftdeletable($softdeletable)
+    {
+        $this->softdeletable = $softdeletable;
+        return $this;
     }
 
     /**

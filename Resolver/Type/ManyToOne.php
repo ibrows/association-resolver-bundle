@@ -47,13 +47,12 @@ class ManyToOne extends AbstractResolver
         $getCurrentTargetEntityMethod = $methods['getEntity'];
         $currentTargetEntity = $entity->$getCurrentTargetEntityMethod();
 
-        if(
-            $currentTargetEntity !== $targetEntity
-            OR
-            ($currentTargetEntity && $currentTargetEntity->getDeletedAt() !== null)
-            OR
-            ($targetEntity && $targetEntity->getDeletedAt() !== null)
-        ){
+        $softDeletableGetter = $this->getSoftdeletableGetter();
+
+        if(($currentTargetEntity !== $targetEntity) ||
+           ($this->isSoftdeletable() && $currentTargetEntity && $currentTargetEntity->$softDeletableGetter() !== null) ||
+           ($this->isSoftdeletable() && $targetEntity && $targetEntity->$softDeletableGetter() !== null)
+        ) {
             $setTargetEntityMethod = $methods['setEntity'];
             $entity->$setTargetEntityMethod($targetEntity);
 

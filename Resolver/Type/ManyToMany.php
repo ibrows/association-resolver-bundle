@@ -57,16 +57,26 @@ class ManyToMany extends AbstractResolver
 
         $hasDelta = false;
 
+        $softDeletableGetter = $this->getSoftdeletableGetter();
+
         foreach($currentTargetEntities as $currentTargetEntity){
-            if(!in_array($currentTargetEntity, $targetEntities) OR ($currentTargetEntity && $currentTargetEntity->getDeletedAt() !== null)){
+            if(!in_array($currentTargetEntity, $targetEntities)){
                 $hasDelta = true;
+                break;
+            } elseif($currentTargetEntity && $this->isSoftdeletable() && $currentTargetEntity->$softDeletableGetter() !== null){
+                $hasDelta = true;
+                break;
             }
         }
 
         if(!$hasDelta){
             foreach($targetEntities as $targetEntity){
-                if(!in_array($targetEntity, $currentTargetEntities) OR ($targetEntity && $targetEntity->getDeletedAt() !== null)){
+                if(!in_array($targetEntity, $currentTargetEntities)){
                     $hasDelta = true;
+                    break;
+                } elseif($targetEntity && $this->isSoftdeletable() && $targetEntity->$softDeletableGetter() !== null){
+                    $hasDelta = true;
+                    break;
                 }
             }
         }

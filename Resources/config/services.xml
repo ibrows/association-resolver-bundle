@@ -3,7 +3,10 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
+    <parameters>
+        <parameter key="ibrows_associationresolver.softdelete">true</parameter>
+        <parameter key="ibrows_associationresolver.softdeletegetter">getDeletedAt</parameter>
+    </parameters>
     <services>
         <service id="ibrows_associationresolver.resolver" class="Ibrows\AssociationResolver\Resolver\Resolver">
             <call method="setAnnotationReader">
@@ -33,16 +36,34 @@
         <service  id="ibrows_associationresolver.resolver.manytomany" class="Ibrows\AssociationResolver\Resolver\Type\ManyToMany">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+            <call method="setSoftdeletable">
+                <argument>%ibrows_associationresolver.softdelete%</argument>
+            </call>
+            <call method="setSoftdeletableGetter">
+                <argument>%ibrows_associationresolver.softdeletegetter%</argument>
+            </call>
         </service>
 
         <service id="ibrows_associationresolver.resolver.manytoone" class="Ibrows\AssociationResolver\Resolver\Type\ManyToOne">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+            <call method="setSoftdeletable">
+                <argument>%ibrows_associationresolver.softdelete%</argument>
+            </call>
+            <call method="setSoftdeletableGetter">
+                <argument>%ibrows_associationresolver.softdeletegetter%</argument>
+            </call>
         </service>
 
         <service id="ibrows_associationresolver.resolver.onetoone" class="Ibrows\AssociationResolver\Resolver\Type\OneToOne">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+            <call method="setSoftdeletable">
+                <argument>%ibrows_associationresolver.softdelete%</argument>
+            </call>
+            <call method="setSoftdeletableGetter">
+                <argument>%ibrows_associationresolver.softdeletegetter%</argument>
+            </call>
         </service>
     </services>
 
