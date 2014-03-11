@@ -27,38 +27,64 @@ class ManyToOne extends AbstractResolver
         $manyToOne = $mappingInfo->getAnnotation();
         $metaData = $mappingInfo->getMetaData();
 
-        $methods = array(
+        $getSetMethods = array(
             'setEntity' => $manyToOne->getEntitySetterName() ?: 'set'. ucfirst($propertyName),
             'getEntity' => $manyToOne->getEntityGetterName() ?: 'get'. ucfirst($propertyName),
-            'getValue' => $manyToOne->getValueGetterName() ?: 'get'. ucfirst($manyToOne->getValueFieldName())
         );
 
-        $this->checkIfMethodsExists($methods, $entity);
+        $this->checkIfMethodsExists($getSetMethods, $entity);
 
-        $getSearchFieldValueMethod = $methods['getValue'];
+        $criterias = $this->getCriterias($resultBag, $mappingInfo, $propertyName, $entity, $output);
+
         $targetClassRepo = $this->entityManager->getRepository($metaData['targetEntity']);
-
-        $criterias = array(
-            $manyToOne->getTargetFieldName() => $entity->$getSearchFieldValueMethod()
-        );
-
         $targetEntity = $targetClassRepo->findOneBy($criterias);
 
-        $getCurrentTargetEntityMethod = $methods['getEntity'];
+        $getCurrentTargetEntityMethod = $getSetMethods['getEntity'];
         $currentTargetEntity = $entity->$getCurrentTargetEntityMethod();
 
         $softDeletableGetter = $this->getSoftdeletableGetter();
 
         if(($currentTargetEntity !== $targetEntity) ||
-           ($this->isSoftdeletable() && $currentTargetEntity && $currentTargetEntity->$softDeletableGetter() !== null) ||
-           ($this->isSoftdeletable() && $targetEntity && $targetEntity->$softDeletableGetter() !== null)
+            ($this->isSoftdeletable() && $currentTargetEntity && $currentTargetEntity->$softDeletableGetter() !== null) ||
+            ($this->isSoftdeletable() && $targetEntity && $targetEntity->$softDeletableGetter() !== null)
         ) {
-            $setTargetEntityMethod = $methods['setEntity'];
+            $setTargetEntityMethod = $getSetMethods['setEntity'];
             $entity->$setTargetEntityMethod($targetEntity);
 
             $resultBag->addChanged($entity);
         }else{
             $resultBag->addSkipped($entity);
         }
+    }
+
+    /**
+     * @param ResultBag $resultBag
+     * @param AssociationMappingInfoInterface $mappingInfo
+     * @param string $propertyName
+     * @param mixed $entity
+     * @param OutputInterface $output
+     * @return array
+     */
+    protected function getCriterias(
+        ResultBag $resultBag,
+        AssociationMappingInfoInterface $mappingInfo,
+        $propertyName,
+        $entity,
+        OutputInterface $output
+    ) {
+        /** @var \Ibrows\AssociationResolver\Annotation\ManyToOne $manyToOne */
+        $manyToOne = $mappingInfo->getAnnotation();
+
+        $valueFieldMethods = array(
+            'getValue' => $manyToOne->getValueGetterName() ?: 'get'. ucfirst($manyToOne->getValueFieldName())
+        );
+
+        $this->checkIfMethodsExists($valueFieldMethods, $entity);
+
+        $getSearchFieldValueMethod = $valueFieldMethods['getValue'];
+
+        return array(
+            $manyToOne->getTargetFieldName() => $entity->$getSearchFieldValueMethod()
+        );
     }
 }
