@@ -30,6 +30,11 @@ abstract class AbstractAssociation implements AssociationInterface
     public $valueGetterName = null;
 
     /**
+     * @var string
+     */
+    public $targetEntity = null;
+
+    /**
      * @return string
      */
     public function getTargetFieldName()
@@ -67,6 +72,14 @@ abstract class AbstractAssociation implements AssociationInterface
     public function getValueGetterName()
     {
         return $this->valueGetterName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTargetEntity()
+    {
+        return $this->targetEntity;
     }
 
     /**

@@ -38,9 +38,14 @@ class AssociationAnnotationReader extends AnnotationReader implements Associatio
         $associationAnnotations = array();
 
         foreach($annotations as $fieldName => $annotation){
-            $associationAnnotations[$fieldName] = new AssociationMappingInfo(
-                $annotation, $metaData->associationMappings[$fieldName]
-            );
+
+            $associationMappings = $metaData->associationMappings[$fieldName];
+
+            if(method_exists($annotation, 'getTargetEntity') && null !== $annotation->getTargetEntity()) {
+                $associationMappings['targetEntity'] = $annotation->getTargetEntity();
+            }
+
+            $associationAnnotations[$fieldName] = new AssociationMappingInfo($annotation, $associationMappings);
         }
         
         return $associationAnnotations;
