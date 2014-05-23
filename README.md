@@ -44,3 +44,21 @@ public $collectionRemoveFunctionName;
 <code>collectionAddFunctionName</code> to customize the add function. If this property is not set the method name will be generated with an 'add' as prefix and the propertyname as suffix
 
 <code>collectionRemoveFunctionName</code> to customize the remove function. If this property is not set the method name will be generated with an 'remove' as prefix and the propertyname as suffix
+
+<h3>The Service</h3>
+To make the resolver functional you have to register the resolver as a service in the service.xml
+
+    
+    <service id="ibrows_associationresolver.resolver.onetoone" class="Ibrows\AssociationResolver\Resolver\Type\OneToOne">
+        <argument type="service" id="doctrine.orm.entity_manager" />
+        <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+        <call method="setSoftdeletable">
+            <argument>%ibrows_associationresolver.softdelete%</argument>
+        </call>
+        <call method="setSoftdeletableGetter">
+            <argument>%ibrows_associationresolver.softdeletegetter%</argument>
+        </call>
+    </service>
+    ´
+        
+The tag defines the position in the chain.
