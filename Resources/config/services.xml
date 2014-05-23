@@ -65,6 +65,16 @@
                 <argument>%ibrows_associationresolver.softdeletegetter%</argument>
             </call>
         </service>
+        <service id="ibrows_associationresolver.resolver.onetomany" class="Ibrows\AssociationResolver\Resolver\Type\OneToMany">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag priority="-20" name="ibrows_associationresolver.resolverchain" />
+            <call method="setSoftdeletable">
+                <argument>%ibrows_associationresolver.softdelete%</argument>
+            </call>
+            <call method="setSoftdeletableGetter">
+                <argument>%ibrows_associationresolver.softdeletegetter%</argument>
+            </call>
+        </service>
     </services>
 
 </container>
