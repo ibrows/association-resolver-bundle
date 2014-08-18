@@ -76,7 +76,7 @@ class ManyToOne extends AbstractResolver
         }
         /** @var $qb QueryBuilder */
         $subSelect = "select t.".'id from ' .$metaData['targetEntity'].' as t WHERE '.$alias.'.'.$annotation->getValueFieldName().' = t.'.$annotation->getTargetFieldName();
-        $qb->orWhere("$alias.$propertyName IS NULL OR $alias.$propertyName != ($subSelect)");
+        $qb->andWhere("$alias.$propertyName IS NULL OR $alias.$propertyName != ($subSelect)");
     }
 
 
