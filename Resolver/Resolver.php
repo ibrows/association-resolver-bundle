@@ -2,15 +2,12 @@
 
 namespace Ibrows\AssociationResolver\Resolver;
 
-use Ibrows\AssociationResolver\Result\ResultBag;
-
-use Ibrows\AssociationResolver\Reader\AssociationAnnotationReaderInterface;
-use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
-
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\NullOutput;
-
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
+use Ibrows\AssociationResolver\Reader\AssociationAnnotationReaderInterface;
+use Ibrows\AssociationResolver\Result\ResultBag;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Resolver implements ResolverInterface
 {
@@ -41,6 +38,7 @@ class Resolver implements ResolverInterface
     public function setAnnotationReader(AssociationAnnotationReaderInterface $annotationReader)
     {
         $this->annotationReader = $annotationReader;
+
         return $this;
     }
 
@@ -51,6 +49,7 @@ class Resolver implements ResolverInterface
     public function setEntityManager(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+
         return $this;
     }
 
@@ -61,6 +60,7 @@ class Resolver implements ResolverInterface
     public function setResultBag(ResultBag $resultBag = null)
     {
         $this->resultBag = $resultBag;
+
         return $this;
     }
 
@@ -71,6 +71,7 @@ class Resolver implements ResolverInterface
     public function setResolverChain(ResolverChainInterface $resolverChain)
     {
         $this->resolverChain = $resolverChain;
+
         return $this;
     }
 
@@ -79,9 +80,10 @@ class Resolver implements ResolverInterface
      */
     public function getResultBag()
     {
-        if(null !== $this->resultBag){
+        if (null !== $this->resultBag) {
             return $this->resultBag;
         }
+
         return $this->resultBag = new ResultBag();
     }
 
@@ -91,9 +93,9 @@ class Resolver implements ResolverInterface
      * @param bool $flush
      * @return Resolver
      */
-    public function resolveAssociations($className, OutputInterface $output = null, $flush = false)
+    public function resolveAssociations($className, OutputInterface $output = null, $flush = false, QueryBuilder $qb = null, $diffMode = false)
     {
-        if(null === $output){
+        if (null === $output) {
             $output = new NullOutput();
         }
 
@@ -101,20 +103,40 @@ class Resolver implements ResolverInterface
 
         $resultBag = $this->getResultBag();
         $associationAnnotations = $this->annotationReader->getAssociationAnnotations($className);
-        $entities = $this->entityManager->getRepository($className)->findAll();
 
-        foreach($entities as $entity){
-            foreach($associationAnnotations as $propertyName => $mappingInfo){
-                $this->resolverChain->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
+        if (!$qb) {
+            $qb = $this->entityManager->getRepository($className)->createQueryBuilder('e');
+        }
+// 14389 querys  16209.90 ms
+        if ($diffMode) {
+            $count = 0;
+            foreach ($associationAnnotations as $propertyName => $mappingInfo) {
+                $qbProp = clone $qb;
+                $this->resolverChain->prepareQB($resultBag, $qbProp, $mappingInfo, $propertyName, $className);
+                $entities = $qbProp->getQuery()->execute();
+                foreach ($entities as $entity) {
+                    $this->resolverChain->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
+                }
+                $count += count($entities);
+
             }
+            $resultBag->setCountProcessed($count);
+        } else {
+// 32159 querys  42104.90 ms
+            $entities = $entities = $qb->getQuery()->execute();
+            foreach ($entities as $entity) {
+                foreach ($associationAnnotations as $propertyName => $mappingInfo) {
+                    $this->resolverChain->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
+                }
+            }
+            $resultBag->setCountProcessed(count($entities));
         }
 
-        $resultBag->setCountProcessed(count($entities));
         $this->writeResultBagToOutput($output, $resultBag);
 
-        if(true === $flush){
+        if (true === $flush) {
             $em = $this->entityManager;
-            foreach($resultBag->getChanged() as $entity){
+            foreach ($resultBag->getChanged() as $entity) {
                 $em->persist($entity);
             }
             $em->flush();

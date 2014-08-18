@@ -2,6 +2,7 @@
 
 namespace Ibrows\AssociationResolver\Resolver;
 
+use Doctrine\ORM\QueryBuilder;
 use Ibrows\AssociationResolver\Resolver\Type\ResolverInterface as ResolverTypeInterface;
 
 use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
@@ -120,5 +121,26 @@ class ResolverChain implements ResolverChainInterface
             }
         }
         return null;
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param AssociationMappingInfoInterface $mappingInfo
+     * @param $propertyName
+     */
+    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName, $className)
+    {
+        $resolver = $this->getResponsibleResolver($resultBag,$mappingInfo, $propertyName,$className);
+
+        if(!$resolver){
+            throw new ResolverNotFoundException(sprintf(
+                'No responsible resolver found for annotation "%s", className "%s" and property "%s"',
+                get_class($mappingInfo->getAnnotation()),
+                get_class($className),
+                $propertyName
+            ));
+        }
+
+        $resolver->prepareQB($resultBag, $qb , $mappingInfo, $propertyName, $className);
     }
 }

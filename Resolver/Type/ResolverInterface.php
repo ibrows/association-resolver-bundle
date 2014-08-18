@@ -2,6 +2,7 @@
 
 namespace Ibrows\AssociationResolver\Resolver\Type;
 
+use Doctrine\ORM\QueryBuilder;
 use Ibrows\AssociationResolver\Result\ResultBag;
 use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
 
@@ -38,4 +39,14 @@ interface ResolverInterface
         $propertyName,
         $entity
     );
+
+
+    /**
+     * @param ResultBag $resultBag
+     * @param QueryBuilder $qb
+     * @param AssociationMappingInfoInterface $mappingInfo
+     * @param $propertyName
+     * @param $className
+     */
+    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo,$propertyName,$className)  ;
 }

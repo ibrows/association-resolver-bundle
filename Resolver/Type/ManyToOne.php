@@ -2,6 +2,7 @@
 
 namespace Ibrows\AssociationResolver\Resolver\Type;
 
+use Doctrine\ORM\QueryBuilder;
 use Ibrows\AssociationResolver\Result\ResultBag;
 use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
 
@@ -32,6 +33,7 @@ class ManyToOne extends AbstractResolver
             'getEntity' => $manyToOne->getEntityGetterName() ?: 'get'. ucfirst($propertyName),
         );
 
+
         $this->checkIfMethodsExists($getSetMethods, $entity);
 
         $criterias = $this->getCriterias($resultBag, $mappingInfo, $propertyName, $entity, $output);
@@ -56,6 +58,27 @@ class ManyToOne extends AbstractResolver
             $resultBag->addSkipped($entity);
         }
     }
+
+    /**
+     * @param ResultBag $resultBag
+     * @param QueryBuilder $qb
+     * @param AssociationMappingInfoInterface $mappingInfo
+     * @param $propertyName
+     * @param $className
+     */
+    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName,$className)
+    {
+        $alias = $qb->getRootAliases()[0];
+        $annotation = $mappingInfo->getAnnotation();
+        $metaData = $mappingInfo->getMetaData();
+        if(!$annotation->getValueFieldName()){
+            return;
+        }
+        /** @var $qb QueryBuilder */
+        $subSelect = "select t.".'id from ' .$metaData['targetEntity'].' as t WHERE '.$alias.'.'.$annotation->getValueFieldName().' = t.'.$annotation->getTargetFieldName();
+        $qb->orWhere("$alias.$propertyName IS NULL OR $alias.$propertyName != ($subSelect)");
+    }
+
 
     /**
      * @param ResultBag $resultBag
