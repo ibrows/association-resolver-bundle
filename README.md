@@ -1,3 +1,7 @@
+# Important:
+
+This Bundle is now stored here: https://gitlab.pwc-digital.ch/ec/bundles/IbrowsAssociationResolverBundle
+
 <h1>iBrows Association Bundle</h1>
 A simple bundle to resolve associations on entities when they'll be imported from an external source
 
