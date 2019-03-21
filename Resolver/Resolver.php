@@ -118,7 +118,6 @@ class Resolver implements ResolverInterface
                     $this->resolverChain->resolveAssociation($resultBag, $mappingInfo, $propertyName, $entity, $output);
                 }
                 $count += count($entities);
-
             }
             $resultBag->setCountProcessed($count);
         } else {

@@ -48,5 +48,5 @@ interface ResolverInterface
      * @param $propertyName
      * @param $className
      */
-    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo,$propertyName,$className)  ;
+    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName, $className);
 }

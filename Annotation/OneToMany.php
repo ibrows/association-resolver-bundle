@@ -13,7 +13,8 @@ namespace Ibrows\AssociationResolver\Annotation;
  * @package Ibrows\AssociationResolver\Annotation
  * @Annotation
  */
-class OneToMany extends AbstractAssociation {
+class OneToMany extends AbstractAssociation
+{
     public $collectionAddFunctionName;
     public $collectionRemoveFunctionName;
 
@@ -48,6 +49,4 @@ class OneToMany extends AbstractAssociation {
     {
         return $this->collectionRemoveFunctionName;
     }
-
-
 }

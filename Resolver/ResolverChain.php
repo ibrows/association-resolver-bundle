@@ -69,10 +69,10 @@ class ResolverChain implements ResolverChainInterface
         $propertyName,
         $entity,
         OutputInterface $output
-    ){
+    ) {
         $resolver = $this->getResponsibleResolver($resultBag, $mappingInfo, $propertyName, $entity);
 
-        if(!$resolver){
+        if (!$resolver) {
             throw new ResolverNotFoundException(sprintf(
                 'No responsible resolver found for annotation "%s", entity "%s" and property "%s"',
                 get_class($mappingInfo->getAnnotation()),
@@ -98,7 +98,7 @@ class ResolverChain implements ResolverChainInterface
         AssociationMappingInfoInterface $mappingInfo,
         $propertyName,
         $entity
-    ){
+    ) {
         return null !== $this->getResponsibleResolver($resultBag, $mappingInfo, $propertyName, $entity);
     }
 
@@ -114,9 +114,9 @@ class ResolverChain implements ResolverChainInterface
         AssociationMappingInfoInterface $mappingInfo,
         $propertyName,
         $entity
-    ){
-        foreach($this->getResolvers() as $resolver){
-            if($resolver->isResponsible($resultBag, $mappingInfo, $propertyName, $entity)){
+    ) {
+        foreach ($this->getResolvers() as $resolver) {
+            if ($resolver->isResponsible($resultBag, $mappingInfo, $propertyName, $entity)) {
                 return $resolver;
             }
         }
@@ -130,9 +130,9 @@ class ResolverChain implements ResolverChainInterface
      */
     public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName, $className)
     {
-        $resolver = $this->getResponsibleResolver($resultBag,$mappingInfo, $propertyName,$className);
+        $resolver = $this->getResponsibleResolver($resultBag, $mappingInfo, $propertyName, $className);
 
-        if(!$resolver){
+        if (!$resolver) {
             throw new ResolverNotFoundException(sprintf(
                 'No responsible resolver found for annotation "%s", className "%s" and property "%s"',
                 get_class($mappingInfo->getAnnotation()),
@@ -141,6 +141,6 @@ class ResolverChain implements ResolverChainInterface
             ));
         }
 
-        $resolver->prepareQB($resultBag, $qb , $mappingInfo, $propertyName, $className);
+        $resolver->prepareQB($resultBag, $qb, $mappingInfo, $propertyName, $className);
     }
 }

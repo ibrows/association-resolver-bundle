@@ -24,7 +24,7 @@ class ManyToMany extends AbstractResolver
         $propertyName,
         $entity,
         OutputInterface $output
-    ){
+    ) {
         $manyToMany = $mappingInfo->getAnnotation();
         $metaData = $mappingInfo->getMetaData();
 
@@ -44,14 +44,14 @@ class ManyToMany extends AbstractResolver
         );
 
         $targetEntities = $targetClassRepo->findBy($criterias);
-        if($targetEntities instanceof Collection){
+        if ($targetEntities instanceof Collection) {
             $targetEntities = $targetEntities->toArray();
         }
 
         $getCurrentTargetEntitiesMethod = $methods['getEntity'];
         $currentTargetEntities = $entity->$getCurrentTargetEntitiesMethod();
 
-        if($currentTargetEntities instanceof Collection){
+        if ($currentTargetEntities instanceof Collection) {
             $currentTargetEntities = $currentTargetEntities->toArray();
         }
 
@@ -59,34 +59,34 @@ class ManyToMany extends AbstractResolver
 
         $softDeletableGetter = $this->getSoftdeletableGetter();
 
-        foreach($currentTargetEntities as $currentTargetEntity){
-            if(!in_array($currentTargetEntity, $targetEntities)){
+        foreach ($currentTargetEntities as $currentTargetEntity) {
+            if (!in_array($currentTargetEntity, $targetEntities)) {
                 $hasDelta = true;
                 break;
-            } elseif($currentTargetEntity && $this->isSoftdeletable() && $currentTargetEntity->$softDeletableGetter() !== null){
+            } elseif ($currentTargetEntity && $this->isSoftdeletable() && $currentTargetEntity->$softDeletableGetter() !== null) {
                 $hasDelta = true;
                 break;
             }
         }
 
-        if(!$hasDelta){
-            foreach($targetEntities as $targetEntity){
-                if(!in_array($targetEntity, $currentTargetEntities)){
+        if (!$hasDelta) {
+            foreach ($targetEntities as $targetEntity) {
+                if (!in_array($targetEntity, $currentTargetEntities)) {
                     $hasDelta = true;
                     break;
-                } elseif($targetEntity && $this->isSoftdeletable() && $targetEntity->$softDeletableGetter() !== null){
+                } elseif ($targetEntity && $this->isSoftdeletable() && $targetEntity->$softDeletableGetter() !== null) {
                     $hasDelta = true;
                     break;
                 }
             }
         }
 
-        if($hasDelta){
+        if ($hasDelta) {
             $setTargetEntityMethod = $methods['setEntity'];
             $entity->$setTargetEntityMethod($targetEntities);
 
             $resultBag->addChanged($entity);
-        }else{
+        } else {
             $resultBag->addSkipped($entity);
         }
     }
