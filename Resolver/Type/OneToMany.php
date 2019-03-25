@@ -31,8 +31,7 @@ class OneToMany extends AbstractResolver
         $propertyName,
         $entity,
         OutputInterface $output
-    )
-    {
+    ) {
         $annotation = $mappingInfo->getAnnotation();
         $metaData = $mappingInfo->getMetaData();
 
@@ -48,7 +47,8 @@ class OneToMany extends AbstractResolver
      * @param $meta
      * @throws \Exception
      */
-    protected function resolve (ResultBag $resultBag, $entity, $propertyName, \Ibrows\AssociationResolver\Annotation\OneToMany $annotation, $meta) {
+    protected function resolve(ResultBag $resultBag, $entity, $propertyName, \Ibrows\AssociationResolver\Annotation\OneToMany $annotation, $meta)
+    {
 
         $valueFieldName = $annotation->getValueFieldName();
         $valueFieldValues = null;
@@ -61,7 +61,7 @@ class OneToMany extends AbstractResolver
 
         $sourceValueGetMethod = 'get'. ucfirst($valueFieldName);
 
-        if ( $annotation->getValueGetterName() != null ) {
+        if ($annotation->getValueGetterName() != null) {
             $sourceValueGetMethod = $annotation->getValueGetterName();
         }
 
@@ -72,7 +72,7 @@ class OneToMany extends AbstractResolver
 
         $valueFieldValues = $entity->$sourceValueGetMethod();
 
-        if ( !is_array($valueFieldValues) ) {
+        if (!is_array($valueFieldValues)) {
             throw new \Exception("Expecting array as returnobject of ".$sourceValueGetMethod."()");
         }
 
@@ -82,20 +82,20 @@ class OneToMany extends AbstractResolver
 
         $targetsEntities = array();
         $delta = false;
-        foreach ( $valueFieldValues as $value ) {
+        foreach ($valueFieldValues as $value) {
             //load the target form repo
             $targets = $targetRepo->findBy(array(
                 $targetFieldName => $value
             ));
 
             //add the entity on each target
-            foreach ( $targets as $target ) {
+            foreach ($targets as $target) {
                 $targetsEntities[] = $target;
                 $setEntityMethod = 'set'.ucfirst($meta['mappedBy']);
                 $getEntityMethod = 'get'.ucfirst($meta['mappedBy']);
                 $this->checkIfMethodsExists(array($setEntityMethod, $getEntityMethod), $target);
                 //only perform if the data has changed
-                if ( $target->$getEntityMethod() != $entity ) {
+                if ($target->$getEntityMethod() != $entity) {
                     $target->$setEntityMethod($entity);
                     $em->persist($target);
                     $delta = true;
@@ -103,14 +103,14 @@ class OneToMany extends AbstractResolver
             }
         }
 
-        if ( !$this->syncCollection($resultBag, $entity, $sourceCollectionFieldAddMethod, $sourceCollectionFieldRemoveMethod, $entity->$sourceCollectionFieldGetMethod(), $targetsEntities) ) {
+        if (!$this->syncCollection($resultBag, $entity, $sourceCollectionFieldAddMethod, $sourceCollectionFieldRemoveMethod, $entity->$sourceCollectionFieldGetMethod(), $targetsEntities)) {
             $resultBag->addSkipped($entity);
         } else {
             $delta = true;
             $resultBag->addChanged($entity);
         }
 
-        if ( $delta ) {
+        if ($delta) {
             $em->persist($entity);
             $em->flush();
         }
@@ -125,12 +125,13 @@ class OneToMany extends AbstractResolver
      * @param $newcollection
      * @return bool
      */
-    protected function syncCollection(ResultBag $resultBag, $entity, $addMethod, $removeMethod, $collection, $newcollection) {
+    protected function syncCollection(ResultBag $resultBag, $entity, $addMethod, $removeMethod, $collection, $newcollection)
+    {
 
         //transform a collection to an array
         $_collection = array();
-        if ( !is_array($collection)) {
-            foreach ( $collection as $entry ) {
+        if (!is_array($collection)) {
+            foreach ($collection as $entry) {
                 $_collection[] = $entry;
             }
         }
@@ -138,21 +139,20 @@ class OneToMany extends AbstractResolver
         $delta = false;
 
         //sync new and removing data
-        foreach ( $collection as $entry ) {
-            if ( !in_array($entry, $newcollection) ) {
+        foreach ($collection as $entry) {
+            if (!in_array($entry, $newcollection)) {
                 $entity->$removeMethod($entry);
                 $delta = true;
             }
         }
 
-        foreach ( $newcollection as $entry ) {
-            if ( !in_array($entry, $collection) ) {
+        foreach ($newcollection as $entry) {
+            if (!in_array($entry, $collection)) {
                 $entity->$addMethod($entry);
                 $delta = true;
             }
         }
 
         return $delta;
-
     }
 }

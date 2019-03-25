@@ -7,5 +7,4 @@ namespace Ibrows\AssociationResolver\Annotation;
  */
 class ManyToMany extends AbstractAssociation
 {
-
 }

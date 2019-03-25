@@ -10,7 +10,7 @@ class CompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if(!$container->hasDefinition('ibrows_associationresolver.resolverchain')) {
+        if (!$container->hasDefinition('ibrows_associationresolver.resolverchain')) {
             return;
         }
 
@@ -22,13 +22,13 @@ class CompilerPass implements CompilerPassInterface
             'ibrows_associationresolver.resolverchain'
         );
 
-        uasort($taggedServices, function($a, $b) {
+        uasort($taggedServices, function ($a, $b) {
             $a = isset($a[0]['priority']) ? $a[0]['priority'] : 0;
             $b = isset($b[0]['priority']) ? $b[0]['priority'] : 0;
             return $a > $b ? -1 : 1;
         });
 
-        foreach($taggedServices as $id => $attributes){
+        foreach ($taggedServices as $id => $attributes) {
             $resolverChain->addMethodCall(
                 'addResolver',
                 array(new Reference($id))

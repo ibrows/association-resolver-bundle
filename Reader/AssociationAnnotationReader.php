@@ -2,8 +2,6 @@
 
 namespace Ibrows\AssociationResolver\Reader;
 
-use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
-use Ibrows\AssociationResolver\Reader\AssociationMappingInfo;
 
 use Ibrows\AnnotationReader\AnnotationReader;
 
@@ -21,7 +19,8 @@ class AssociationAnnotationReader extends AnnotationReader implements Associatio
      * @param EntityManager $entityManager
      * @return AssociationAnnotationReader
      */
-    public function setEntityManager(EntityManager $entityManager){
+    public function setEntityManager(EntityManager $entityManager)
+    {
         $this->entityManager = $entityManager;
         return $this;
     }
@@ -37,11 +36,10 @@ class AssociationAnnotationReader extends AnnotationReader implements Associatio
         
         $associationAnnotations = array();
 
-        foreach($annotations as $fieldName => $annotation){
+        foreach ($annotations as $fieldName => $annotation) {
+            $associationMappings = $metaData->getAssociationMapping($fieldName);
 
-            $associationMappings = $metaData->associationMappings[$fieldName];
-
-            if(method_exists($annotation, 'getTargetEntity') && null !== $annotation->getTargetEntity()) {
+            if (method_exists($annotation, 'getTargetEntity') && null !== $annotation->getTargetEntity()) {
                 $associationMappings['targetEntity'] = $annotation->getTargetEntity();
             }
 

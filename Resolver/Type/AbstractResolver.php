@@ -46,7 +46,7 @@ abstract class AbstractResolver implements ResolverInterface
         AssociationMappingInfoInterface $mappingInfo,
         $propertyName,
         $entity
-    ){
+    ) {
         return $mappingInfo->getAnnotation()->getType() == $this->getType();
     }
 
@@ -103,8 +103,8 @@ abstract class AbstractResolver implements ResolverInterface
      */
     protected function checkIfMethodsExists(array $methods, $entity)
     {
-        foreach($methods as $methodName){
-            if(!method_exists($entity, $methodName)){
+        foreach ($methods as $methodName) {
+            if (!method_exists($entity, $methodName)) {
                 throw new MethodNotFoundException(sprintf(
                     'Method "%s" not found but needed',
                     get_class($entity).'::'.$methodName.'()'
@@ -121,10 +121,8 @@ abstract class AbstractResolver implements ResolverInterface
      * @param $propertyName
      * @param $className
      */
-    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName,$className)
+    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName, $className)
     {
         return;
     }
-
-
 }

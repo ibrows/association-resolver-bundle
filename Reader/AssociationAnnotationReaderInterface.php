@@ -2,8 +2,6 @@
 
 namespace Ibrows\AssociationResolver\Reader;
 
-use Ibrows\AssociationResolver\Reader\AssociationMappingInfoInterface;
-
 use Ibrows\AnnotationReader\AnnotationReaderInterface;
 use Doctrine\ORM\EntityManager;
 

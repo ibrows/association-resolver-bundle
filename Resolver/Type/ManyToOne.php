@@ -24,7 +24,7 @@ class ManyToOne extends AbstractResolver
         $propertyName,
         $entity,
         OutputInterface $output
-    ){
+    ) {
         $manyToOne = $mappingInfo->getAnnotation();
         $metaData = $mappingInfo->getMetaData();
 
@@ -46,7 +46,7 @@ class ManyToOne extends AbstractResolver
 
         $softDeletableGetter = $this->getSoftdeletableGetter();
 
-        if(($currentTargetEntity !== $targetEntity) ||
+        if (($currentTargetEntity !== $targetEntity) ||
             ($this->isSoftdeletable() && $currentTargetEntity && $currentTargetEntity->$softDeletableGetter() !== null) ||
             ($this->isSoftdeletable() && $targetEntity && $targetEntity->$softDeletableGetter() !== null)
         ) {
@@ -54,7 +54,7 @@ class ManyToOne extends AbstractResolver
             $entity->$setTargetEntityMethod($targetEntity);
 
             $resultBag->addChanged($entity);
-        }else{
+        } else {
             $resultBag->addSkipped($entity);
         }
     }
@@ -66,12 +66,12 @@ class ManyToOne extends AbstractResolver
      * @param $propertyName
      * @param $className
      */
-    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName,$className)
+    public function prepareQB(ResultBag $resultBag, QueryBuilder $qb, AssociationMappingInfoInterface $mappingInfo, $propertyName, $className)
     {
         $alias = $qb->getRootAliases()[0];
         $annotation = $mappingInfo->getAnnotation();
         $metaData = $mappingInfo->getMetaData();
-        if(!$annotation->getValueFieldName()){
+        if (!$annotation->getValueFieldName()) {
             return;
         }
         /** @var $qb QueryBuilder */
